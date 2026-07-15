@@ -1,0 +1,1654 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="전지적 지구 시점 공식 소개 및 런칭 페이지. 쓰로인훈쌤 김종훈 제작, 초등 과학 천체 수업을 위한 무료 인터랙티브 시뮬레이션." />
+  <meta name="theme-color" content="#020617" />
+  <title>전지적 지구 시점 | 초등 과학 인터랙티브 천체 시뮬레이션</title>
+  <style>
+    :root {
+      --bg: #020617;
+      --bg-soft: #061126;
+      --bg-lift: #081a33;
+      --text: #fbfdff;
+      --muted: #d3deef;
+      --dim: #a7b6ce;
+      --cyan: #37e0d8;
+      --sky: #67c8ff;
+      --violet: #a78bfa;
+      --gold: #f4d58d;
+      --line: rgba(151, 202, 255, 0.28);
+      --glass: rgba(8, 24, 51, 0.8);
+      --glass-strong: rgba(10, 31, 63, 0.9);
+      --shadow: 0 24px 78px rgba(0, 0, 0, 0.44);
+      --radius: 8px;
+      --max: 1280px;
+      --nav-h: 74px;
+      --mx: 50vw;
+      --my: 35vh;
+      color-scheme: dark;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      min-width: 320px;
+      overflow-x: hidden;
+      background:
+        radial-gradient(circle at var(--mx) var(--my), rgba(55, 224, 216, 0.12), transparent 28rem),
+        radial-gradient(circle at calc(100% - var(--mx)) calc(18vh + var(--my) / 6), rgba(167, 139, 250, 0.12), transparent 32rem),
+        linear-gradient(145deg, var(--bg) 0%, #03102a 48%, #020817 100%);
+      color: var(--text);
+      font-family: "Pretendard", "Noto Sans KR", "Apple SD Gothic Neo", "Segoe UI", sans-serif;
+      font-weight: 500;
+      line-height: 1.65;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      z-index: -4;
+      pointer-events: none;
+      background:
+        linear-gradient(rgba(255, 255, 255, 0.018) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.014) 1px, transparent 1px);
+      background-size: 92px 92px;
+      mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.9), transparent 82%);
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    a:focus-visible,
+    button:focus-visible {
+      outline: 3px solid rgba(55, 224, 216, 0.95);
+      outline-offset: 4px;
+    }
+
+    .skip-link {
+      position: fixed;
+      left: 16px;
+      top: 12px;
+      z-index: 100;
+      transform: translateY(-180%);
+      border-radius: 6px;
+      background: #ffffff;
+      color: #031126;
+      padding: 10px 14px;
+      font-weight: 800;
+      transition: transform 0.2s ease;
+    }
+
+    .skip-link:focus {
+      transform: translateY(0);
+    }
+
+    #starfield {
+      position: fixed;
+      inset: 0;
+      z-index: -3;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+    }
+
+    .cursor-light {
+      position: fixed;
+      inset: -30vmax;
+      z-index: -2;
+      pointer-events: none;
+      background:
+        radial-gradient(circle at var(--mx) var(--my), rgba(103, 200, 255, 0.15), transparent 15rem),
+        radial-gradient(circle at calc(var(--mx) + 7rem) calc(var(--my) + 5rem), rgba(167, 139, 250, 0.12), transparent 18rem);
+      filter: blur(12px);
+      opacity: 0.8;
+    }
+
+    .site-nav {
+      position: fixed;
+      left: 0;
+      right: 0;
+      top: 0;
+      z-index: 50;
+      height: var(--nav-h);
+      border-bottom: 1px solid transparent;
+      transition: background 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+    }
+
+    .site-nav.is-scrolled {
+      background: rgba(2, 6, 23, 0.78);
+      border-color: rgba(148, 163, 184, 0.15);
+      box-shadow: 0 16px 42px rgba(0, 0, 0, 0.28);
+      backdrop-filter: blur(18px);
+    }
+
+    .nav-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 22px;
+      width: min(var(--max), calc(100% - 40px));
+      height: 100%;
+      margin: 0 auto;
+    }
+
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      min-width: max-content;
+      font-size: 1.02rem;
+      font-weight: 900;
+      letter-spacing: 0;
+    }
+
+    .brand-mark {
+      display: grid;
+      place-items: center;
+      width: 34px;
+      height: 34px;
+      border: 1px solid rgba(55, 224, 216, 0.46);
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 35%, rgba(103, 200, 255, 0.8), rgba(55, 224, 216, 0.12) 38%, rgba(167, 139, 250, 0.08) 62%, transparent 64%);
+      box-shadow: 0 0 28px rgba(55, 224, 216, 0.22);
+    }
+
+    .brand-mark::before {
+      content: "";
+      width: 20px;
+      height: 8px;
+      border-top: 1px solid rgba(244, 213, 141, 0.7);
+      border-radius: 50%;
+      transform: rotate(-24deg);
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 6px;
+      font-size: 0.93rem;
+      color: #dbeafe;
+    }
+
+    .nav-links a {
+      display: inline-flex;
+      align-items: center;
+      min-height: 42px;
+      border-radius: 999px;
+      padding: 0 13px;
+      color: rgba(248, 251, 255, 0.82);
+      transition: color 0.2s ease, background 0.2s ease;
+    }
+
+    .nav-links a:hover {
+      background: rgba(148, 163, 184, 0.12);
+      color: #ffffff;
+    }
+
+    .nav-links .nav-priority {
+      border: 1px solid rgba(244, 213, 141, 0.22);
+      background: rgba(244, 213, 141, 0.08);
+      color: #fff7d8;
+      font-weight: 900;
+    }
+
+    .nav-links .nav-cta {
+      margin-left: 4px;
+      border: 1px solid rgba(55, 224, 216, 0.35);
+      background: rgba(55, 224, 216, 0.1);
+      color: #f8ffff;
+      font-weight: 900;
+    }
+
+    .nav-links .btn-icon {
+      font-size: 0.8rem;
+    }
+
+    main {
+      position: relative;
+      z-index: 1;
+    }
+
+    .section {
+      position: relative;
+      padding: 112px 0;
+      scroll-margin-top: calc(var(--nav-h) + 24px);
+    }
+
+    .section:not(.hero)::before {
+      content: "";
+      position: absolute;
+      left: 50%;
+      top: 0;
+      width: min(1120px, calc(100% - 40px));
+      height: 1px;
+      transform: translateX(-50%);
+      background: linear-gradient(90deg, transparent, rgba(55, 224, 216, 0.28), rgba(167, 139, 250, 0.18), transparent);
+      pointer-events: none;
+    }
+
+    .wrap {
+      width: min(var(--max), calc(100% - 40px));
+      margin: 0 auto;
+    }
+
+    .hero {
+      min-height: 100vh;
+      display: grid;
+      align-items: center;
+      padding: calc(var(--nav-h) + 44px) 0 80px;
+      overflow: hidden;
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: 180px;
+      pointer-events: none;
+      background: linear-gradient(to bottom, transparent, rgba(2, 6, 23, 0.9));
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 0.92fr) minmax(420px, 1fr);
+      align-items: center;
+      gap: 46px;
+    }
+
+    .eyebrow,
+    .maker-pill,
+    .status-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border: 1px solid rgba(148, 221, 255, 0.22);
+      border-radius: 999px;
+      background: rgba(6, 17, 38, 0.56);
+      backdrop-filter: blur(18px);
+      color: #dcefff;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    }
+
+    .eyebrow {
+      padding: 8px 13px;
+      font-size: 0.92rem;
+      font-weight: 800;
+    }
+
+    .eyebrow::before,
+    .maker-pill::before,
+    .status-chip::before {
+      content: "";
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--cyan);
+      box-shadow: 0 0 18px rgba(55, 224, 216, 0.9);
+    }
+
+    h1,
+    h2,
+    h3,
+    p {
+      margin-top: 0;
+    }
+
+    .hero h1 {
+      max-width: 790px;
+      margin: 24px 0 22px;
+      font-size: clamp(2.5rem, 5.4vw, 4.95rem);
+      line-height: 1.07;
+      letter-spacing: 0;
+      text-wrap: balance;
+    }
+
+    .gradient-text {
+      color: transparent;
+      background: linear-gradient(100deg, var(--cyan), var(--sky) 44%, var(--violet));
+      -webkit-background-clip: text;
+      background-clip: text;
+    }
+
+    .hero-copy {
+      max-width: 720px;
+      margin-bottom: 24px;
+      color: #e0e9f8;
+      font-size: clamp(1.05rem, 1.7vw, 1.22rem);
+      font-weight: 600;
+    }
+
+    .meta-line {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 10px;
+      margin: 22px 0 16px;
+    }
+
+    .maker-pill {
+      padding: 7px 12px;
+      color: #fff7d8;
+      border-color: rgba(244, 213, 141, 0.3);
+      background: rgba(82, 64, 22, 0.18);
+      font-weight: 800;
+    }
+
+    .maker-pill::before {
+      background: var(--gold);
+      box-shadow: 0 0 18px rgba(244, 213, 141, 0.82);
+    }
+
+    .research {
+      color: #cad6e8;
+      font-weight: 800;
+    }
+
+    .status-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 18px 0 20px;
+    }
+
+    .status-chip {
+      padding: 8px 12px;
+      color: #ecfeff;
+      font-size: 0.95rem;
+      font-weight: 900;
+    }
+
+    .note {
+      margin-bottom: 28px;
+      color: #c2cde0;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 13px;
+    }
+
+    .btn {
+      --btn-bg: rgba(148, 163, 184, 0.09);
+      --btn-border: rgba(148, 221, 255, 0.22);
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      min-height: 52px;
+      overflow: hidden;
+      border: 1px solid var(--btn-border);
+      border-radius: 999px;
+      background: var(--btn-bg);
+      padding: 0 24px;
+      color: #f8fbff;
+      font-weight: 900;
+      line-height: 1;
+      white-space: nowrap;
+      box-shadow: 0 12px 34px rgba(0, 0, 0, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+      transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .btn::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      transform: translateX(-120%) skewX(-24deg);
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.24), transparent);
+      transition: transform 0.62s ease;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      border-color: rgba(103, 200, 255, 0.55);
+      box-shadow: 0 16px 42px rgba(20, 184, 166, 0.16);
+    }
+
+    .btn:hover::before {
+      transform: translateX(120%) skewX(-24deg);
+    }
+
+    .btn-icon {
+      position: relative;
+      z-index: 1;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 1em;
+      transition: transform 0.2s ease;
+    }
+
+    .btn:hover .btn-icon {
+      transform: translate(2px, -2px);
+    }
+
+    .btn-primary {
+      --btn-bg: linear-gradient(135deg, rgba(55, 224, 216, 0.95), rgba(103, 200, 255, 0.86) 44%, rgba(167, 139, 250, 0.78));
+      --btn-border: rgba(180, 246, 255, 0.68);
+      color: #061126;
+      box-shadow: 0 18px 46px rgba(55, 224, 216, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+    }
+
+    .btn-video {
+      color: #eaf2ff;
+    }
+
+    .orbit-stage {
+      position: relative;
+      min-height: 560px;
+      display: grid;
+      align-items: center;
+      transform: translate3d(calc(var(--px, 0) * -14px), calc(var(--py, 0) * -10px), 0);
+      transition: transform 0.1s linear;
+    }
+
+    .orbit-system {
+      position: absolute;
+      inset: -4% -8% 0 -2%;
+      display: grid;
+      place-items: center;
+      min-height: 520px;
+      opacity: 0.58;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .orbital-core {
+      position: relative;
+      width: min(55vw, 430px);
+      aspect-ratio: 1;
+      border: 1px solid rgba(103, 200, 255, 0.16);
+      border-radius: 50%;
+      background:
+        radial-gradient(circle at 38% 32%, rgba(215, 250, 255, 0.85), rgba(103, 200, 255, 0.34) 17%, rgba(55, 224, 216, 0.13) 33%, rgba(10, 31, 63, 0.06) 56%, transparent 64%),
+        radial-gradient(circle at 50% 50%, rgba(167, 139, 250, 0.08), transparent 56%);
+      box-shadow:
+        inset 0 0 90px rgba(103, 200, 255, 0.16),
+        0 0 85px rgba(55, 224, 216, 0.16),
+        0 0 160px rgba(167, 139, 250, 0.1);
+    }
+
+    .orbital-core::before,
+    .orbital-core::after {
+      content: "";
+      position: absolute;
+      inset: 8%;
+      border: 1px solid rgba(244, 213, 141, 0.22);
+      border-radius: 50%;
+      transform: rotateX(68deg) rotateZ(-22deg);
+      animation: orbitSpin 22s linear infinite;
+    }
+
+    .orbital-core::after {
+      inset: -8%;
+      border-color: rgba(103, 200, 255, 0.2);
+      transform: rotateX(62deg) rotateZ(31deg);
+      animation-duration: 32s;
+      animation-direction: reverse;
+    }
+
+    .orbit-ring {
+      position: absolute;
+      inset: 0;
+      border: 1px solid rgba(148, 221, 255, 0.2);
+      border-radius: 50%;
+      transform: rotateX(70deg) rotateZ(var(--rotate));
+      animation: orbitSpin var(--speed) linear infinite;
+    }
+
+    .orbit-ring:nth-child(1) {
+      --rotate: 12deg;
+      --speed: 28s;
+      inset: 8%;
+    }
+
+    .orbit-ring:nth-child(2) {
+      --rotate: -36deg;
+      --speed: 36s;
+      inset: -11%;
+      border-color: rgba(167, 139, 250, 0.2);
+    }
+
+    .orbit-ring:nth-child(3) {
+      --rotate: 54deg;
+      --speed: 42s;
+      inset: 20%;
+      border-color: rgba(244, 213, 141, 0.18);
+    }
+
+    .orbit-ring::before {
+      content: "";
+      position: absolute;
+      top: -4px;
+      left: 48%;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #dffcff;
+      box-shadow: 0 0 22px rgba(55, 224, 216, 0.86);
+    }
+
+    .data-panel {
+      position: absolute;
+      right: 0;
+      bottom: 6%;
+      width: min(310px, 74vw);
+      border: 1px solid rgba(148, 221, 255, 0.18);
+      border-radius: var(--radius);
+      background: rgba(3, 11, 28, 0.62);
+      padding: 18px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(18px);
+    }
+
+    .data-panel strong {
+      display: block;
+      margin-bottom: 8px;
+      color: #fff7d8;
+    }
+
+    .data-panel p {
+      margin: 0;
+      color: #d0dbea;
+      font-size: 0.95rem;
+    }
+
+    .program-shot {
+      position: relative;
+      z-index: 1;
+      overflow: hidden;
+      margin: 0;
+      border: 1px solid rgba(103, 200, 255, 0.34);
+      border-radius: var(--radius);
+      background: linear-gradient(145deg, rgba(4, 13, 34, 0.94), rgba(8, 26, 51, 0.84));
+      padding: 10px;
+      box-shadow:
+        0 24px 70px rgba(0, 0, 0, 0.48),
+        0 0 48px rgba(55, 224, 216, 0.13),
+        0 0 70px rgba(167, 139, 250, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.08);
+      transform: perspective(1200px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) scale(1);
+      transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .program-shot:hover {
+      border-color: rgba(55, 224, 216, 0.52);
+      transform: perspective(1200px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) scale(1.006);
+    }
+
+    .program-shot img,
+    .shot-fallback {
+      display: block;
+      width: 100%;
+      aspect-ratio: 16 / 10;
+      border-radius: 6px;
+      object-fit: contain;
+      background: #020617;
+    }
+
+    .shot-fallback {
+      display: none;
+      place-items: center;
+      min-height: 260px;
+      border: 1px solid rgba(148, 221, 255, 0.16);
+      color: #dffcff;
+      text-align: center;
+      background:
+        radial-gradient(circle at 50% 38%, rgba(55, 224, 216, 0.16), transparent 34%),
+        linear-gradient(145deg, #061126, #020617);
+    }
+
+    .program-shot.is-missing img {
+      display: none;
+    }
+
+    .program-shot.is-missing .shot-fallback {
+      display: grid;
+    }
+
+    .shot-fallback svg {
+      width: min(78%, 420px);
+      height: auto;
+      opacity: 0.92;
+    }
+
+    .shot-caption {
+      margin: 10px 4px 0;
+      color: #d8e4f4;
+      font-size: 0.94rem;
+      font-weight: 700;
+      text-align: center;
+    }
+
+    .hero-shot {
+      width: min(100%, 680px);
+      margin-left: auto;
+    }
+
+    .hero-visual .data-panel {
+      position: relative;
+      right: auto;
+      bottom: auto;
+      width: min(420px, 92%);
+      margin: 16px 4px 0 auto;
+      z-index: 2;
+    }
+
+    .section-head {
+      max-width: 760px;
+      margin-bottom: 38px;
+    }
+
+    .section-kicker {
+      margin-bottom: 12px;
+      color: var(--gold);
+      font-size: 0.88rem;
+      font-weight: 900;
+      letter-spacing: 0;
+      text-transform: uppercase;
+    }
+
+    .section h2 {
+      margin-bottom: 16px;
+      font-size: clamp(2rem, 4vw, 3.2rem);
+      line-height: 1.18;
+      letter-spacing: 0;
+      text-wrap: balance;
+    }
+
+    .section-desc {
+      color: #d2ddec;
+      font-size: 1.06rem;
+      font-weight: 600;
+    }
+
+    .intent-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 0.95fr) minmax(320px, 1.05fr);
+      gap: 40px;
+      align-items: center;
+    }
+
+    .quote-band {
+      position: relative;
+      border-top: 1px solid rgba(55, 224, 216, 0.34);
+      border-bottom: 1px solid rgba(167, 139, 250, 0.28);
+      padding: 34px 0;
+    }
+
+    .quote-band::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(90deg, transparent, rgba(55, 224, 216, 0.08), rgba(167, 139, 250, 0.08), transparent);
+      pointer-events: none;
+    }
+
+    .quote-band strong {
+      position: relative;
+      display: block;
+      font-size: clamp(2rem, 4.6vw, 4.2rem);
+      line-height: 1.16;
+      letter-spacing: 0;
+      text-wrap: balance;
+    }
+
+    .quote-band span {
+      position: relative;
+      display: block;
+      margin-top: 14px;
+      color: #d0dbea;
+    }
+
+    .copy-stack p {
+      color: #d6e1f0;
+      font-size: 1rem;
+    }
+
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .glass-card {
+      position: relative;
+      overflow: hidden;
+      border: 1px solid rgba(148, 221, 255, 0.25);
+      border-radius: var(--radius);
+      background: linear-gradient(145deg, rgba(10, 31, 63, 0.84), rgba(4, 13, 34, 0.72));
+      box-shadow: 0 18px 52px rgba(0, 0, 0, 0.26), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(18px);
+    }
+
+    .tilt-card {
+      transform: perspective(900px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) translateY(0);
+      transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+    }
+
+    .tilt-card:hover {
+      border-color: rgba(103, 200, 255, 0.38);
+      box-shadow: 0 18px 60px rgba(15, 23, 42, 0.4), 0 0 30px rgba(55, 224, 216, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+      transform: perspective(900px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) translateY(-4px);
+    }
+
+    .feature-card {
+      min-height: 284px;
+      padding: 24px;
+    }
+
+    .card-icon {
+      display: grid;
+      place-items: center;
+      width: 46px;
+      height: 46px;
+      margin-bottom: 24px;
+      border: 1px solid rgba(55, 224, 216, 0.25);
+      border-radius: 50%;
+      background: rgba(55, 224, 216, 0.08);
+      color: #9df8f2;
+    }
+
+    .card-icon svg {
+      width: 25px;
+      height: 25px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 1.7;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .feature-card h3,
+    .audience-card h3,
+    .bundle-card h3 {
+      margin-bottom: 10px;
+      font-size: 1.2rem;
+      line-height: 1.34;
+    }
+
+    .feature-card p,
+    .bundle-card p,
+    .audience-card li {
+      color: #d0dbea;
+      font-size: 1rem;
+      font-weight: 550;
+    }
+
+    .feature-media-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 22px;
+      margin-top: 26px;
+    }
+
+    .feature-shot img,
+    .feature-shot .shot-fallback {
+      aspect-ratio: 16 / 9;
+    }
+
+    .audience-area {
+      position: relative;
+    }
+
+    .audience-area::before {
+      content: "";
+      position: absolute;
+      left: 50%;
+      top: 51%;
+      width: min(28vw, 250px);
+      height: min(28vw, 250px);
+      border: 1px solid rgba(244, 213, 141, 0.2);
+      border-radius: 50%;
+      transform: translate(-50%, -50%) rotateX(70deg);
+      pointer-events: none;
+    }
+
+    .audience-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 28px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .audience-card {
+      padding: 30px;
+    }
+
+    .audience-card .grade {
+      display: inline-flex;
+      margin-bottom: 14px;
+      color: var(--gold);
+      font-weight: 900;
+    }
+
+    .audience-card ul {
+      display: grid;
+      gap: 10px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .audience-card li {
+      position: relative;
+      padding-left: 19px;
+    }
+
+    .audience-card li::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 0.72em;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--cyan);
+      box-shadow: 0 0 12px rgba(55, 224, 216, 0.72);
+    }
+
+    .bundle-grid {
+      display: grid;
+      grid-template-columns: minmax(320px, 1.05fr) minmax(0, 0.95fr);
+      gap: 18px;
+      align-items: stretch;
+    }
+
+    .bundle-secondary {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .bundle-card {
+      display: flex;
+      flex-direction: column;
+      min-height: 288px;
+      padding: 26px;
+    }
+
+    .bundle-card.primary {
+      min-height: 100%;
+      border-color: rgba(55, 224, 216, 0.58);
+      background:
+        radial-gradient(circle at 18% 12%, rgba(55, 224, 216, 0.18), transparent 34%),
+        linear-gradient(145deg, rgba(13, 71, 83, 0.68), rgba(8, 22, 49, 0.86)),
+        linear-gradient(135deg, rgba(55, 224, 216, 0.12), transparent);
+      box-shadow: 0 24px 78px rgba(0, 0, 0, 0.38), 0 0 42px rgba(55, 224, 216, 0.14), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    }
+
+    .bundle-card.primary h3 {
+      font-size: clamp(1.55rem, 2.3vw, 2.1rem);
+    }
+
+    .bundle-card p {
+      flex: 1;
+      margin-bottom: 18px;
+    }
+
+    .bundle-badge {
+      align-self: flex-start;
+      margin-bottom: 14px;
+      border: 1px solid rgba(244, 213, 141, 0.28);
+      border-radius: 999px;
+      background: rgba(244, 213, 141, 0.1);
+      padding: 6px 10px;
+      color: #fff4ce;
+      font-size: 0.82rem;
+      font-weight: 950;
+    }
+
+    .helper {
+      margin: 12px 0 0;
+      color: #b9c8de;
+      font-size: 0.92rem;
+      font-weight: 700;
+    }
+
+    .process {
+      background: linear-gradient(to bottom, transparent, rgba(8, 26, 51, 0.38), transparent);
+    }
+
+    .process-grid,
+    .maker-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 0.92fr) minmax(320px, 1.08fr);
+      gap: 42px;
+      align-items: start;
+    }
+
+    .quiet-highlight {
+      position: sticky;
+      top: calc(var(--nav-h) + 28px);
+      border-left: 3px solid var(--gold);
+      padding: 18px 0 18px 24px;
+      color: #fff4ce;
+      font-size: clamp(1.55rem, 3vw, 2.45rem);
+      font-weight: 900;
+      line-height: 1.28;
+      text-wrap: balance;
+    }
+
+    .maker-card {
+      padding: 30px;
+    }
+
+    .maker-name {
+      margin-bottom: 6px;
+      color: #ffffff;
+      font-size: 1.75rem;
+      font-weight: 950;
+    }
+
+    .maker-affiliation {
+      color: #d9e3f4;
+      font-weight: 800;
+    }
+
+    .maker-note {
+      margin-top: 22px;
+      border-top: 1px solid rgba(148, 221, 255, 0.16);
+      padding-top: 18px;
+      color: #bdc9db;
+    }
+
+    .final-cta {
+      padding: 118px 0 122px;
+      text-align: center;
+    }
+
+    .cta-inner {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .final-cta h2 {
+      margin-bottom: 18px;
+      font-size: clamp(2.1rem, 5.2vw, 4.4rem);
+    }
+
+    .final-cta p {
+      color: #c6d2e4;
+      font-size: 1.1rem;
+    }
+
+    .final-cta .actions {
+      justify-content: center;
+      margin-top: 28px;
+    }
+
+    .site-footer {
+      border-top: 1px solid rgba(148, 221, 255, 0.13);
+      padding: 28px 0;
+      color: #9fb0ca;
+      background: rgba(2, 6, 23, 0.58);
+    }
+
+    .footer-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      width: min(var(--max), calc(100% - 40px));
+      margin: 0 auto;
+    }
+
+    .footer-title {
+      color: #f8fbff;
+      font-weight: 950;
+    }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(28px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+
+    .reveal.in-view {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    @keyframes orbitSpin {
+      to {
+        rotate: 360deg;
+      }
+    }
+
+    @media (max-width: 1100px) {
+      .cards-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 980px) {
+      :root {
+        --nav-h: 68px;
+      }
+
+      .nav-inner {
+        width: min(var(--max), calc(100% - 28px));
+      }
+
+      .nav-links a:not(.nav-priority):not(.nav-cta) {
+        display: none;
+      }
+
+      .hero-grid,
+      .intent-grid,
+      .process-grid,
+      .maker-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .hero {
+        min-height: auto;
+      }
+
+      .orbit-stage {
+        min-height: 430px;
+      }
+
+      .orbit-system {
+        min-height: 420px;
+      }
+
+      .hero-shot {
+        margin: 0 auto;
+      }
+
+      .cards-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .bundle-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .bundle-secondary,
+      .feature-media-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .quiet-highlight {
+        position: relative;
+        top: auto;
+      }
+    }
+
+    @media (max-width: 700px) {
+      .section {
+        padding: 82px 0;
+      }
+
+      .wrap,
+      .footer-inner {
+        width: min(var(--max), calc(100% - 28px));
+      }
+
+      .brand span:last-child {
+        max-width: 120px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .nav-inner {
+        gap: 10px;
+      }
+
+      .nav-links {
+        gap: 4px;
+        font-size: 0.86rem;
+      }
+
+      .nav-links a {
+        min-height: 40px;
+        padding: 0 10px;
+      }
+
+      .hero-grid {
+        gap: 22px;
+      }
+
+      .hero h1 {
+        font-size: clamp(2.42rem, 13vw, 3.8rem);
+      }
+
+      .actions {
+        width: 100%;
+      }
+
+      .btn {
+        width: 100%;
+        min-height: 54px;
+      }
+
+      .orbit-stage {
+        min-height: 360px;
+      }
+
+      .orbital-core {
+        width: min(78vw, 330px);
+      }
+
+      .hero-visual .data-panel {
+        width: 100%;
+        margin-top: 22px;
+      }
+
+      .cards-grid,
+      .audience-grid,
+      .bundle-grid,
+      .bundle-secondary,
+      .feature-media-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .audience-area::before {
+        display: none;
+      }
+
+      .feature-card,
+      .bundle-card {
+        min-height: auto;
+      }
+
+      .footer-inner {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+    }
+
+    @media (hover: none), (pointer: coarse) {
+      .tilt-card,
+      .tilt-card:hover,
+      .orbit-stage,
+      .program-shot,
+      .program-shot:hover {
+        transform: none;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        scroll-behavior: auto !important;
+        animation-duration: 0.001ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.001ms !important;
+      }
+
+      .reveal {
+        opacity: 1;
+        transform: none;
+      }
+
+      .program-shot,
+      .program-shot:hover {
+        transform: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#main">본문으로 바로가기</a>
+  <canvas id="starfield" aria-hidden="true"></canvas>
+  <div class="cursor-light" aria-hidden="true"></div>
+
+  <header class="site-nav" id="siteNav">
+    <div class="nav-inner">
+      <a class="brand" href="#top" aria-label="전지적 지구 시점 첫 화면으로 이동">
+        <span class="brand-mark" aria-hidden="true"></span>
+        <span>전지적 지구 시점</span>
+      </a>
+      <nav class="nav-links" aria-label="주요 메뉴">
+        <a class="nav-priority" href="#bundle">수업꾸러미</a>
+        <a href="#features">주요 기능</a>
+        <a href="#audience">활용 대상</a>
+        <a href="#maker">제작자</a>
+        <a class="nav-cta external" href="https://kkankong32-alt.github.io/EarthMotionExplorer" target="_blank" rel="noopener noreferrer">프로그램 실행 <span class="btn-icon" aria-hidden="true">↗</span></a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="hero section" id="top">
+      <div class="wrap hero-grid">
+        <div class="hero-copy-block reveal">
+          <div class="eyebrow">초등 과학을 위한 인터랙티브 천체 시뮬레이션</div>
+          <h1>우주에서 본 지구와<br />지구에서 바라본 하늘을 <span class="gradient-text">연결합니다</span></h1>
+          <p class="hero-copy">전지적 지구 시점은 우주에서 본 태양·지구·달의 움직임과 지구에서 관찰한 하늘을 같은 날짜와 시간으로 비교하는 초등 과학 공학도구입니다.</p>
+          <div class="meta-line" aria-label="제작자 정보">
+            <span class="maker-pill">제작: 쓰로인훈쌤 김종훈</span>
+            <span class="research">부산초등과학교육연구회</span>
+          </div>
+          <div class="status-row" aria-label="프로그램 이용 조건">
+            <span class="status-chip">완전 무료</span>
+            <span class="status-chip">설치 없음</span>
+            <span class="status-chip">로그인 없음</span>
+          </div>
+          <p class="note">PC 또는 태블릿 가로 모드에서 가장 쾌적하게 이용할 수 있습니다.</p>
+          <div class="actions">
+            <a class="btn btn-primary external" href="https://kkankong32-alt.github.io/EarthMotionExplorer" target="_blank" rel="noopener noreferrer">프로그램 바로 실행 <span class="btn-icon" aria-hidden="true">↗</span></a>
+            <a class="btn btn-video external" href="https://youtu.be/qtxjuvSLiF4" target="_blank" rel="noopener noreferrer">소개 영상 보기 <span class="btn-icon" aria-hidden="true">↗</span></a>
+          </div>
+        </div>
+
+        <div class="orbit-stage hero-visual reveal">
+          <div class="orbit-system" aria-hidden="true">
+            <div class="orbital-core">
+              <span class="orbit-ring"></span>
+              <span class="orbit-ring"></span>
+              <span class="orbit-ring"></span>
+            </div>
+          </div>
+          <figure class="program-shot hero-shot media-tilt">
+            <img src="assets/images/earth-motion-main.webp" alt="전지적 지구 시점 프로그램 전체 화면 캡처" loading="eager" decoding="async" />
+            <div class="shot-fallback" aria-hidden="true">
+              <svg viewBox="0 0 640 360" role="img" aria-label="프로그램 캡처 이미지 대체 화면">
+                <rect x="22" y="24" width="596" height="312" rx="18" fill="rgba(2, 6, 23, 0.86)" stroke="rgba(103, 200, 255, 0.35)" />
+                <rect x="52" y="58" width="252" height="218" rx="12" fill="rgba(8, 26, 51, 0.92)" stroke="rgba(55, 224, 216, 0.28)" />
+                <rect x="336" y="58" width="252" height="218" rx="12" fill="rgba(8, 26, 51, 0.92)" stroke="rgba(167, 139, 250, 0.28)" />
+                <circle cx="178" cy="166" r="48" fill="none" stroke="rgba(55, 224, 216, 0.6)" />
+                <ellipse cx="178" cy="166" rx="92" ry="28" fill="none" stroke="rgba(244, 213, 141, 0.55)" />
+                <path d="M382 214c34-78 102-78 150 0" fill="none" stroke="rgba(103, 200, 255, 0.62)" stroke-width="3" />
+                <circle cx="456" cy="139" r="34" fill="rgba(244, 213, 141, 0.72)" />
+                <text x="320" y="310" text-anchor="middle" fill="rgba(223, 252, 255, 0.92)" font-size="22" font-family="sans-serif">이미지를 assets/images 폴더에 넣으면 표시됩니다</text>
+              </svg>
+            </div>
+            <figcaption class="shot-caption">우주 시점과 지구 관측자 시점을 같은 날짜와 시간으로 비교</figcaption>
+          </figure>
+          <div class="data-panel">
+            <strong>두 시점 동기화</strong>
+            <p>날짜와 시간이 바뀌면 우주 시점의 움직임과 하늘에서 보이는 변화가 함께 연결됩니다.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="bundle">
+      <div class="wrap">
+        <div class="section-head reveal">
+          <div class="section-kicker">Lesson Package</div>
+          <h2>전지적 지구 시점 수업꾸러미</h2>
+          <p class="section-desc">프로그램 실행부터 개념 확인, 형성평가, 사용 안내까지 한 번에 이용할 수 있습니다.</p>
+        </div>
+        <div class="bundle-grid">
+          <article class="glass-card bundle-card primary tilt-card reveal">
+            <span class="bundle-badge">가장 많이 사용하는 바로가기</span>
+            <h3>전지적 지구 시점 프로그램</h3>
+            <p>우주 시점과 지구 관측자 시점을 동시에 탐구하는 무료 천체 시뮬레이션입니다.</p>
+            <a class="btn btn-primary external" href="https://kkankong32-alt.github.io/EarthMotionExplorer" target="_blank" rel="noopener noreferrer">무료로 실행하기 <span class="btn-icon" aria-hidden="true">↗</span></a>
+            <span class="helper">새 탭에서 실행됩니다.</span>
+          </article>
+          <div class="bundle-secondary">
+            <article class="glass-card bundle-card tilt-card reveal">
+              <h3>시뮬레이션 전용 단원 정리 퀴즈</h3>
+              <p>프로그램에서 학습한 핵심 개념을 10문항으로 확인합니다.</p>
+              <a class="btn external" href="https://kkankong32-alt.github.io/EarthMotionExplorerquiz" target="_blank" rel="noopener noreferrer">전용 퀴즈 시작 <span class="btn-icon" aria-hidden="true">↗</span></a>
+            </article>
+            <article class="glass-card bundle-card tilt-card reveal">
+              <span class="bundle-badge">형성평가</span>
+              <h3>비바샘 샘퀴즈 연동</h3>
+              <p>비바샘 에듀테크를 활용한 형성평가용 단원 정리 퀴즈입니다.</p>
+              <a class="btn external" href="https://samquiz.vivasam.com/q/WOg8gZ1x" target="_blank" rel="noopener noreferrer">샘퀴즈 참여 <span class="btn-icon" aria-hidden="true">↗</span></a>
+            </article>
+            <article class="glass-card bundle-card tilt-card reveal">
+              <h3>사용 방법과 수업 활용 영상</h3>
+              <p>프로그램의 주요 기능과 실제 수업 활용 방법을 영상으로 확인합니다.</p>
+              <a class="btn external" href="https://youtu.be/qtxjuvSLiF4" target="_blank" rel="noopener noreferrer">소개 영상 보기 <span class="btn-icon" aria-hidden="true">↗</span></a>
+            </article>
+            <article class="glass-card bundle-card tilt-card reveal">
+              <span class="bundle-badge">29쪽 안내서</span>
+              <h3>사용설명서</h3>
+              <p>기능별 조작 방법과 수업 활용 방법을 자세히 정리한 공개 사용설명서입니다.</p>
+              <a class="btn external" href="https://canva.link/gzxb5tvevc5ugys" target="_blank" rel="noopener noreferrer">사용설명서 보기 <span class="btn-icon" aria-hidden="true">↗</span></a>
+            </article>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="why">
+      <div class="wrap intent-grid">
+        <div class="quote-band reveal">
+          <strong>지구가 움직이기 때문에,<br />하늘은 그렇게 보입니다.</strong>
+          <span>두 시점의 동기화가 천체 운동의 원인과 결과를 연결합니다.</span>
+        </div>
+        <div class="copy-stack reveal">
+          <div class="section-kicker">Program Intent</div>
+          <h2>왜 전지적 지구 시점인가요?</h2>
+          <p>스텔라리움은 매우 뛰어난 천문 프로그램이지만, 초등 수업에서는 다양한 기능과 설정 과정이 학생들에게 다소 복잡하게 느껴질 수 있습니다.</p>
+          <p>전지적 지구 시점은 초등 과학 수업에서 꼭 필요한 기능에 집중하고, 우주 시점과 지구 관측자 시점을 하나의 화면에서 동시에 연결하도록 설계했습니다.</p>
+          <p>학생들은 지구가 어떻게 움직이는지와 하늘에서 천체가 어떻게 보이는지를 따로 외우지 않고, 두 현상의 관계를 직접 조작하며 이해할 수 있습니다.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="features">
+      <div class="wrap">
+        <div class="section-head reveal">
+          <div class="section-kicker">Core Features</div>
+          <h2>한 화면에서 연결되는 천체의 움직임</h2>
+          <p class="section-desc">수업에 필요한 관찰, 조작, 탐구, 확인 활동을 하나의 흐름으로 이어 줍니다.</p>
+        </div>
+        <div class="cards-grid">
+          <article class="glass-card feature-card tilt-card reveal">
+            <div class="card-icon" aria-hidden="true"><svg viewBox="0 0 32 32"><circle cx="10" cy="16" r="4"/><circle cx="22" cy="16" r="4"/><path d="M14 16h4M5 8c7 4 15 4 22 0M5 24c7-4 15-4 22 0"/></svg></div>
+            <h3>두 시점 동시 관찰</h3>
+            <p>우주에서 본 태양·지구·달과 지구에서 바라본 하늘을 같은 날짜와 시간으로 함께 비교합니다.</p>
+          </article>
+          <article class="glass-card feature-card tilt-card reveal">
+            <div class="card-icon" aria-hidden="true"><svg viewBox="0 0 32 32"><circle cx="16" cy="16" r="10"/><path d="M16 7v9l6 3M7 4v5h5M25 28v-5h-5"/></svg></div>
+            <h3>시간·날짜·위치 조절</h3>
+            <p>하루의 시간, 일 년의 날짜, 관측 위치와 방향을 자유롭게 바꾸며 천체의 움직임을 탐구합니다.</p>
+          </article>
+          <article class="glass-card feature-card tilt-card reveal">
+            <div class="card-icon" aria-hidden="true"><svg viewBox="0 0 32 32"><circle cx="16" cy="16" r="5"/><path d="M4 16c4-8 20-8 24 0M4 16c4 8 20 8 24 0M16 3v5M16 24v5"/></svg></div>
+            <h3>자전과 공전 탐구</h3>
+            <p>지구의 자전과 공전이 낮과 밤, 태양과 별의 겉보기 운동, 계절별 별자리 변화에 미치는 영향을 확인합니다.</p>
+          </article>
+          <article class="glass-card feature-card tilt-card reveal">
+            <div class="card-icon" aria-hidden="true"><svg viewBox="0 0 32 32"><path d="M16 4l2.2 7 7.3-1.3-5 5.3 5 5.3-7.3-1.3L16 26l-2.2-7-7.3 1.3 5-5.3-5-5.3 7.3 1.3L16 4z"/><path d="M16 10v12M10 16h12"/></svg></div>
+            <h3>북쪽 하늘 관찰</h3>
+            <p>북극성, 북두칠성, 큰곰자리, 작은곰자리, 카시오페이아자리와 북극성을 중심으로 한 별의 일주 운동을 관찰합니다.</p>
+          </article>
+          <article class="glass-card feature-card tilt-card reveal">
+            <div class="card-icon" aria-hidden="true"><svg viewBox="0 0 32 32"><path d="M21 5a11 11 0 1 0 0 22 9 9 0 1 1 0-22z"/><path d="M5 7l2 2M25 25l2 2M27 7l-2 2"/></svg></div>
+            <h3>달의 위치와 위상 변화</h3>
+            <p>날짜와 시간에 따른 달의 방향, 높이, 모양과 밝은 부분의 변화를 두 시점에서 확인합니다.</p>
+          </article>
+          <article class="glass-card feature-card tilt-card reveal">
+            <div class="card-icon" aria-hidden="true"><svg viewBox="0 0 32 32"><path d="M8 6h16v20H8z"/><path d="M12 12h8M12 17h8M12 22h4"/><path d="M22 4v4M10 4v4"/></svg></div>
+            <h3>학습부터 평가까지</h3>
+            <p>학습·탐구·미션 활동 이후 전용 퀴즈와 비바샘 샘퀴즈를 활용해 핵심 개념을 확인합니다.</p>
+          </article>
+        </div>
+        <div class="feature-media-grid">
+          <figure class="program-shot feature-shot media-tilt reveal">
+            <img src="assets/images/north-sky-view.webp" alt="북쪽 하늘 관찰 기능 화면 캡처" loading="lazy" decoding="async" />
+            <div class="shot-fallback" aria-hidden="true">
+              <svg viewBox="0 0 640 360" role="img" aria-label="북쪽 하늘 관찰 이미지 대체 화면">
+                <rect x="22" y="24" width="596" height="312" rx="18" fill="rgba(2, 6, 23, 0.88)" stroke="rgba(103, 200, 255, 0.35)" />
+                <circle cx="320" cy="178" r="10" fill="rgba(244, 213, 141, 0.9)" />
+                <circle cx="320" cy="178" r="62" fill="none" stroke="rgba(55, 224, 216, 0.26)" />
+                <circle cx="320" cy="178" r="116" fill="none" stroke="rgba(103, 200, 255, 0.22)" />
+                <circle cx="320" cy="178" r="170" fill="none" stroke="rgba(167, 139, 250, 0.2)" />
+                <path d="M208 122l34 18 42-36 36 74 56-56 58 82" fill="none" stroke="rgba(223, 252, 255, 0.76)" stroke-width="3" />
+                <text x="320" y="312" text-anchor="middle" fill="rgba(223, 252, 255, 0.92)" font-size="21" font-family="sans-serif">북쪽 하늘 관찰 이미지 준비 영역</text>
+              </svg>
+            </div>
+            <figcaption class="shot-caption">북극성을 중심으로 한 별의 일주 운동과 주요 별자리 관찰</figcaption>
+          </figure>
+          <figure class="program-shot feature-shot media-tilt reveal">
+            <img src="assets/images/moon-observation.webp" alt="달의 위치와 위상 변화 관찰 기능 화면 캡처" loading="lazy" decoding="async" />
+            <div class="shot-fallback" aria-hidden="true">
+              <svg viewBox="0 0 640 360" role="img" aria-label="달 관측 이미지 대체 화면">
+                <rect x="22" y="24" width="596" height="312" rx="18" fill="rgba(2, 6, 23, 0.88)" stroke="rgba(167, 139, 250, 0.35)" />
+                <path d="M116 250c72-112 142-112 214 0s142 112 214 0" fill="none" stroke="rgba(103, 200, 255, 0.52)" stroke-width="4" />
+                <circle cx="404" cy="132" r="58" fill="rgba(244, 213, 141, 0.82)" />
+                <circle cx="424" cy="118" r="60" fill="rgba(2, 6, 23, 0.86)" />
+                <path d="M118 88h92M118 120h132M118 152h72" stroke="rgba(223, 252, 255, 0.62)" stroke-width="6" stroke-linecap="round" />
+                <text x="320" y="312" text-anchor="middle" fill="rgba(223, 252, 255, 0.92)" font-size="21" font-family="sans-serif">달 관측 이미지 준비 영역</text>
+              </svg>
+            </div>
+            <figcaption class="shot-caption">날짜와 시간에 따른 달의 위치와 모양 변화 확인</figcaption>
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <section class="section audience-area" id="audience">
+      <div class="wrap">
+        <div class="section-head reveal">
+          <div class="section-kicker">Classroom Use</div>
+          <h2>초등 천체 수업의 활용 범위를 넓혔습니다</h2>
+        </div>
+        <div class="audience-grid">
+          <article class="glass-card audience-card tilt-card reveal">
+            <span class="grade">6학년 과학 — 지구의 운동</span>
+            <ul>
+              <li>지구의 자전과 공전</li>
+              <li>낮과 밤</li>
+              <li>태양과 별의 겉보기 운동</li>
+              <li>계절별 별자리</li>
+              <li>우주 시점과 관측자 시점의 연결</li>
+            </ul>
+          </article>
+          <article class="glass-card audience-card tilt-card reveal">
+            <span class="grade">4학년 2학기 — 밤하늘 관찰</span>
+            <ul>
+              <li>달의 위치와 모양 변화</li>
+              <li>북극성과 북두칠성</li>
+              <li>큰곰자리와 작은곰자리</li>
+              <li>카시오페이아자리</li>
+              <li>북극성을 중심으로 한 별의 일주 운동</li>
+            </ul>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section process" id="process">
+      <div class="wrap process-grid">
+        <div class="quiet-highlight reveal">코딩 기술보다 먼저 출발한 것은 교실에서 느낀 불편함이었습니다.</div>
+        <div class="copy-stack reveal">
+          <div class="section-kicker">Making Story</div>
+          <h2>교사의 아이디어와 인공지능이 함께 만든 수업도구</h2>
+          <p>교과서와 교사용 지도서를 분석해 학생들이 어려워하는 개념과 교사의 수업 불편을 먼저 정리했습니다.</p>
+          <p>기능과 수업 흐름은 교사가 설계하고, Claude Fable 5를 활용한 바이브코딩으로 프로그램을 구현했습니다.</p>
+          <p>이후 인디스쿨 선생님들과 부산초등과학교육연구회 회원들의 실제 수업 피드백을 반영해 화면 조절, 전체화면, 북쪽 하늘 관찰, 달 관측 기능 등을 지속적으로 개선했습니다.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="maker">
+      <div class="wrap maker-grid">
+        <div class="section-head reveal">
+          <div class="section-kicker">Creator</div>
+          <h2>제작자 안내</h2>
+          <p class="section-desc">프로그램이 다른 사이트에서 만든 자료로 오해되지 않도록 제작자 정보를 명확하게 표시합니다.</p>
+        </div>
+        <article class="glass-card maker-card reveal">
+          <div class="maker-name">쓰로인훈쌤 김종훈</div>
+          <div class="maker-affiliation">부산광역시 명문초등학교</div>
+          <div class="maker-affiliation">부산초등과학교육연구회</div>
+          <p class="maker-note">초등 과학 수업에서 학생들이 복잡한 현상을 더 쉽고 직관적으로 이해할 수 있는 교육용 도구를 연구하고 제작합니다.</p>
+          <p class="maker-note">본 프로그램은 초등 과학 수업을 위한 무료 교육용 자료입니다. 수업과 교육 목적으로 자유롭게 활용할 수 있으며, 프로그램의 무단 수정·재배포 및 상업적 이용은 제작자와 협의해 주세요.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="final-cta section" id="run">
+      <div class="wrap cta-inner reveal">
+        <h2>우주에서 본 움직임과 하늘에서 보이는 변화를 직접 연결해 보세요.</h2>
+        <p>설치도 로그인도 필요하지 않습니다.</p>
+        <div class="actions">
+          <a class="btn btn-primary external" href="https://kkankong32-alt.github.io/EarthMotionExplorer" target="_blank" rel="noopener noreferrer">전지적 지구 시점 실행하기 <span class="btn-icon" aria-hidden="true">↗</span></a>
+        </div>
+        <p class="helper">PC 또는 태블릿 가로 모드 권장</p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div>
+        <div class="footer-title">전지적 지구 시점</div>
+        <div>제작: 쓰로인훈쌤 김종훈</div>
+      </div>
+      <div>초등 과학 수업을 위한 무료 교육용 자료 · <span id="year"></span></div>
+    </div>
+  </footer>
+
+  <script>
+    // 현재 연도와 내비게이션 상태를 관리합니다.
+    const root = document.documentElement;
+    const nav = document.getElementById("siteNav");
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    document.getElementById("year").textContent = new Date().getFullYear();
+
+    const updateNav = () => {
+      nav.classList.toggle("is-scrolled", window.scrollY > 12);
+    };
+    updateNav();
+    window.addEventListener("scroll", updateNav, { passive: true });
+
+    // 마우스 위치를 CSS 변수로 전달해 배경 광원과 Hero 오브젝트가 은은하게 반응하도록 합니다.
+    let pointerX = window.innerWidth / 2;
+    let pointerY = window.innerHeight / 3;
+    const canUsePointerEffects = window.matchMedia("(hover: hover) and (pointer: fine)").matches && !reducedMotion;
+    if (canUsePointerEffects) {
+      window.addEventListener("pointermove", (event) => {
+        pointerX = event.clientX;
+        pointerY = event.clientY;
+        const px = pointerX / window.innerWidth - 0.5;
+        const py = pointerY / window.innerHeight - 0.5;
+        root.style.setProperty("--mx", `${pointerX}px`);
+        root.style.setProperty("--my", `${pointerY}px`);
+        root.style.setProperty("--px", px.toFixed(4));
+        root.style.setProperty("--py", py.toFixed(4));
+      }, { passive: true });
+    }
+
+    // 카드와 프로그램 캡처의 기울임은 데스크톱 포인터 환경에서만 작게 적용합니다.
+    if (canUsePointerEffects) {
+      document.querySelectorAll(".tilt-card, .media-tilt").forEach((card) => {
+        card.addEventListener("pointermove", (event) => {
+          const rect = card.getBoundingClientRect();
+          const x = (event.clientX - rect.left) / rect.width - 0.5;
+          const y = (event.clientY - rect.top) / rect.height - 0.5;
+          const strength = card.classList.contains("media-tilt") ? 1.4 : 3;
+          card.style.setProperty("--rx", `${(-y * strength).toFixed(2)}deg`);
+          card.style.setProperty("--ry", `${(x * strength).toFixed(2)}deg`);
+        });
+        card.addEventListener("pointerleave", () => {
+          card.style.setProperty("--rx", "0deg");
+          card.style.setProperty("--ry", "0deg");
+        });
+      });
+    }
+
+    // 실제 캡처 파일이 아직 없을 때는 깨진 이미지 대신 우주형 대체 화면을 보여줍니다.
+    document.querySelectorAll(".program-shot").forEach((shot) => {
+      const image = shot.querySelector("img");
+      if (!image) return;
+      const markLoaded = () => shot.classList.remove("is-missing");
+      const markMissing = () => shot.classList.add("is-missing");
+      image.addEventListener("load", markLoaded);
+      image.addEventListener("error", markMissing);
+      if (image.complete && image.naturalWidth === 0) markMissing();
+    });
+
+    // 스크롤 진입 시 섹션을 부드럽게 표시합니다.
+    const revealTargets = document.querySelectorAll(".reveal");
+    if ("IntersectionObserver" in window && !reducedMotion) {
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("in-view");
+            observer.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.16 });
+      revealTargets.forEach((target) => observer.observe(target));
+    } else {
+      revealTargets.forEach((target) => target.classList.add("in-view"));
+    }
+
+    // 성능을 고려한 Canvas 별빛 파티클입니다. 모바일에서는 수를 줄이고, 창이 비활성화되면 정지합니다.
+    const canvas = document.getElementById("starfield");
+    const ctx = canvas.getContext("2d");
+    let stars = [];
+    let rafId = 0;
+    let isPaused = document.hidden || reducedMotion;
+
+    function resizeCanvas() {
+      const dpr = Math.min(window.devicePixelRatio || 1, 1.8);
+      canvas.width = Math.floor(window.innerWidth * dpr);
+      canvas.height = Math.floor(window.innerHeight * dpr);
+      canvas.style.width = `${window.innerWidth}px`;
+      canvas.style.height = `${window.innerHeight}px`;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      createStars();
+    }
+
+    function createStars() {
+      const area = window.innerWidth * window.innerHeight;
+      const coarse = window.matchMedia("(pointer: coarse)").matches;
+      const count = Math.min(coarse ? 78 : 145, Math.max(48, Math.floor(area / (coarse ? 10500 : 7800))));
+      stars = Array.from({ length: count }, () => ({
+        x: Math.random() * window.innerWidth,
+        y: Math.random() * window.innerHeight,
+        r: Math.random() * 1.35 + 0.25,
+        vx: (Math.random() - 0.5) * 0.08,
+        vy: Math.random() * 0.045 + 0.012,
+        alpha: Math.random() * 0.58 + 0.22,
+        twinkle: Math.random() * Math.PI * 2
+      }));
+    }
+
+    function drawStars() {
+      ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+      const driftX = canUsePointerEffects ? (pointerX / window.innerWidth - 0.5) * 0.18 : 0;
+      const driftY = canUsePointerEffects ? (pointerY / window.innerHeight - 0.5) * 0.14 : 0;
+      for (const star of stars) {
+        star.x += star.vx + driftX * 0.035;
+        star.y += star.vy + driftY * 0.035;
+        star.twinkle += 0.018;
+        if (star.x < -8) star.x = window.innerWidth + 8;
+        if (star.x > window.innerWidth + 8) star.x = -8;
+        if (star.y > window.innerHeight + 8) star.y = -8;
+        const glow = star.alpha + Math.sin(star.twinkle) * 0.16;
+        ctx.beginPath();
+        ctx.fillStyle = `rgba(219, 244, 255, ${Math.max(0.08, glow)})`;
+        ctx.arc(star.x, star.y, star.r, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      rafId = requestAnimationFrame(drawStars);
+    }
+
+    function startStars() {
+      if (!isPaused && !rafId) {
+        rafId = requestAnimationFrame(drawStars);
+      }
+    }
+
+    function stopStars() {
+      cancelAnimationFrame(rafId);
+      rafId = 0;
+    }
+
+    resizeCanvas();
+    if (!reducedMotion) startStars();
+    window.addEventListener("resize", resizeCanvas, { passive: true });
+    document.addEventListener("visibilitychange", () => {
+      isPaused = document.hidden || reducedMotion;
+      if (isPaused) {
+        stopStars();
+      } else {
+        startStars();
+      }
+    });
+  </script>
+</body>
+</html>
